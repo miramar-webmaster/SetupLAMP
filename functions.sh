@@ -472,10 +472,12 @@ function configureProjects()
 		popd > /dev/null
 
 		#Now symlink the files directory to the files dir in the backup area:
-		filedir=$projectdir/dev/docroot/sites/default/files
-		[[ -d $filedir ]] && rmdir $filedir
-		ln -s $projectdir/backup/files $filedir
-
+		
+	# TODO: Uncomment the following when ready for database
+		#filedir=$projectdir/dev/docroot/sites/default/files
+		#[[ -d $filedir ]] && rmdir $filedir
+		#ln -s                 $projectdir/backup/files $filedir
+        # END todo
 		#echo "Waiting for composer/npm processes to finish..."
 		#wait $p1 $p2
 	fi
@@ -488,18 +490,15 @@ function configureDrupalSettings() # WORK NEEDED
 	[[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}"
 
 	local _env
-
 	for _env in dev stage prod
 	do
-		echo "Creating: $_dir"
-		[ ! -d $_dir ] && mkdir $_dir
-		
-		settingsfile=$_dir/$_env.settings.php
-
-		sed "s|\$drupal_db|$drupal_db|" $_env.settings.php > $settingsfile
-		sed -i "s|\$drupal_user|${drupal_user}|" $settingsfile
-		sed -i "s|\$drupal_password|${drupal_password}|" $settingsfile
-		sed -i "s|\$env|${_env}|" $settingsfile
+          echo "Creating: $_dir"
+          [ ! -d $_dir ] && mkdir $_dir
+          settingsfile=$_dir/$_env.settings.php
+          sed "s|\$drupal_db|$drupal_db|" $_env.settings.php > $settingsfile
+          sed -i "s|\$drupal_user|${drupal_user}|" $settingsfile
+          sed -i "s|\$drupal_password|${drupal_password}|" $settingsfile
+          sed -i "s|\$env|${_env}|" $settingsfile
 	done
 	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 }
@@ -568,10 +567,9 @@ function initDatabases()
 function setupContainers
 {
 
-	echo "***************************************************************"
-	sg docker "docker pull memcached"
-	sg docker "docker run --name memcache --restart always -p 11211:11211 -d memcached"
-	echo "***************************************************************"
-
+  echo "***************************************************************"
+  sg docker "docker pull memcached"
+  sg docker "docker run --name memcache --restart always -p 11211:11211 -d memcached"
+  echo "***************************************************************"
 }
 

@@ -20,7 +20,7 @@ function restoreArchiveFromMount()
 	local bkfile=$(getBackupFileName $filespec)
 
 	echo "Backup filename: [$bkfile]"
-	if [ "$bkfile" == "" ] || [ ! -f $bkfile ]; then echo "No backup file found!  A part of my soul has died."; return 4; fi	
+	if [ "$bkfile" == "" ] || [ ! -f $bkfile ]; then echo "No backup file found!"; return 4; fi	
 	
 	echo "Restoredir: $restoredir"
 
@@ -37,7 +37,7 @@ function restoreArchiveFromMount()
 	fi
 	
 	if [ -d oldweb ]; then sudo rm -rf oldweb; fi
-	sudo chown -R www-data web/sites/default/files
+	sudo chown -R www-data docroot/sites/default/files
 	popd > /dev/null
 }
 
@@ -83,8 +83,8 @@ function restoreDatabase()
 	#if [ -d ~/web-projects/$1 ];
 	#then
 	#		pushd ~/web-projects/$1 > /dev/null
-	#	sudo rm -rf ~/web-projects/$1/web/sites/default/files
-	#	sudo ln -s ~/web-projects/backup/web/sites/default/files web/sites/default/files
+	#	sudo rm -rf ~/web-projects/$1/docroot     /sites/default/files
+	#	sudo ln -s ~/web-projects/backup/web/sites/default/files docroot/sites/default/files
 	#	popd > /dev/null
 	#fi;
 

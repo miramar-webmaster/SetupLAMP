@@ -12,8 +12,8 @@ hostname=$(hostname)
 LAMPonly="N"
 
 while true; do
-  read -p "Set up LAMP without Drupal? (y/N): " -n 1 -r response
-  echo
+  #read -p "Set up LAMP without Drupal? (y/N): " -n 1 -r response
+read -e -i "N" -p "Are you sure? [y/N] " response  echo
   if [[ "$response" =~ ^[Yy]$ ]]
   then
     echo "Yes"
@@ -25,6 +25,7 @@ while true; do
   elif [[ -z "$response" ]]
   then
     echo "Default: No"
+    response="N"
     break
   else
     echo "Invalid input. Try again."
@@ -33,7 +34,8 @@ done
 
 LAMPonly=$response
 
-if [ $LAMPonly == "N" ]; then
+if [ $LAMPonly = "N" ]
+then
   echo "What environment are you creating? 
       1)Development
       2)Staging
@@ -102,19 +104,21 @@ if [ $LAMPonly == "N" ]; then
   if [ $env == "dev" ]; then
     setupVSCode
   fi
-  echo "Waiting for restoreArchiveProc ($restoreArchiveProc) to finish..."
-  wait $restoreArchiveProc
+  #echo "Waiting for restoreArchiveProc ($restoreArchiveProc) to finish..."
+  #wait $restoreArchiveProc
 
   #Set the database backup filename if not already provided...
   #We must do this here since the untar is ran in the background...
-  pushd $HOME/web-projects/backup
-  echo "Checking for sdmiramar.sql in $PWD"
-  if [ -f sdmiramar.sql ] && [ "$dbfilename" = "UNK" ]; then
-	dbfilename=`realpath sdmiramar.sql`
-	echo "set DB Filename to $dbfilename"
-  fi
-  popd
-  initDatabases #& initDatabasesProc=$!
+  # TODO: Uncomment the following when ready to develop database logic 
+  #pushd $HOME/web-projects/backup
+  #echo "Checking for sdmiramar.sql in $PWD"
+  #if [ -f sdmiramar.sql ] && [ "$dbfilename" = "UNK" ]; then
+#	dbfilename=`realpath sdmiramar.sql`
+#	echo "set DB Filename to $dbfilename"
+ # fi
+  #popd
+  #initDatabases #& initDatabasesProc=$!
+  # END todo
   configureProjects & configProjectsProc=$!
   configureDrupalSettings
 fi
