@@ -256,6 +256,13 @@ function setupPHPRepository
   sudo apt update
 }
 
+function configureDocker()
+{
+  sudo apt update
+  sudo groupadd docker
+  sudo usermod -a -G docker $USER
+}
+
 function configureGit
 {
 	git config --global --bool core.autocrlf false

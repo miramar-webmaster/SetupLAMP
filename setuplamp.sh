@@ -85,8 +85,9 @@ setupDockerRepository
 setupNodeRepository
 setupPHPRepository
 
-addPackages "docker-ce docker-ce-cli docker-compose containerd.io" && ubuntuAddPackages
+ubuntuAddPackages
 installPackages
+configureDocker
 configureGit
 installComposer
 if [ $LAMPonly == "N" ]; then

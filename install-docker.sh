@@ -35,9 +35,6 @@ function setupDockerRepository
     $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
     sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
     
-    sudo apt update
-    sudo groupadd docker
-    sudo usermod -a -G docker $USER
-
+    addPackages "docker-ce docker-ce-cli docker-compose containerd.io"
     [[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 }
