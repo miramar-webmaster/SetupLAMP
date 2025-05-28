@@ -183,6 +183,7 @@ function addBashAliases()
 
 #This function handles the skipLAMP/LAMPonly flags.
 ##Arg1 = cacheonly flag
+
 function ubuntuAddPackages()
 {
   # Housekeeping packages
@@ -248,14 +249,6 @@ function setupNodeRepository()
   addPackage "nodejs"
 }
 
-function setupDocker
-{
-    # Docker and Compose
-    sudo apt update
-    sudo groupadd docker
-    sudo usermod -a -G docker $USER      
-}
-
 function setupPHPRepository
 {
   php_repo="ppa:ondrej/php"
@@ -277,108 +270,108 @@ function configureGit
 
 function configure_apache()
 {
-	wait #debug; ensure nothing else running in BG to avoid overlapped text
-	#Ensure server is stopped
-	echo "Configuring Apache..."
-	sudo apache2ctl stop &> /dev/null
+  wait #debug; ensure nothing else running in BG to avoid overlapped text
+  #Ensure server is stopped
+  echo "Configuring Apache..."
+  sudo apache2ctl stop &> /dev/null
 	
-	#enable needed modules
-	sudo a2enmod ssl rewrite &> /dev/null
+  #enable needed modules
+  sudo a2enmod ssl rewrite &> /dev/null
 
-	# The items below are customizations for a Drupal dev/stage/prod installation
-	echo 'Customizing default LAMP for Drupal dev/stage/prod installation.'
+  # The items below are customizations for a Drupal dev/stage/prod installation
+  echo 'Customizing default LAMP for Drupal dev/stage/prod installation.'
 	
-	addHosts 
+  addHosts 
 
-	#sudo cp 101-dev.conf   /etc/apache2/sites-available
-	#sudo cp 102-stage.conf /etc/apache2/sites-available
-	#sudo cp 103-prod.conf  /etc/apache2/sites-available
+  #sudo cp 101-dev.conf   /etc/apache2/sites-available
+  #sudo cp 102-stage.conf /etc/apache2/sites-available
+  #sudo cp 103-prod.conf  /etc/apache2/sites-available
 
-	#sudo sed -i "s|\/\$HOME|${HOME}|g" /etc/apache2/sites-available/101-dev.conf
-	#sudo sed -i "s|\/\$HOME|${HOME}|g" /etc/apache2/sites-available/102-stage.conf
-	#sudo sed -i "s|\/\$HOME|${HOME}|g" /etc/apache2/sites-available/103-prod.conf
+  #sudo sed -i "s|\/\$HOME|${HOME}|g" /etc/apache2/sites-available/101-dev.conf
+  #sudo sed -i "s|\/\$HOME|${HOME}|g" /etc/apache2/sites-available/102-stage.conf
+  #sudo sed -i "s|\/\$HOME|${HOME}|g" /etc/apache2/sites-available/103-prod.conf
 
-	#sudo a2ensite 101-dev 102-stage 103-prod &> /dev/null
+  #sudo a2ensite 101-dev 102-stage 103-prod &> /dev/null
 
-	self_sign '/etc/apache2' '/CN=*'
+   self_sign '/etc/apache2' '/CN=*'
 	
-	if [ $LAMPonly == "N" ]; then
-      sitenum=100
-	  conffile=$sitenum-$env.conf
-	  filename=/etc/apache2/sites-available/$conffile
-	  servername=$site.loc
+   if [ $LAMPonly == "N" ]; then
+     sitenum=100
+     conffile=$sitenum-$env.conf
+     filename=/etc/apache2/sites-available/$conffile
+     servername=$site.loc
 
-	  sudo cp $env.conf  $filename
-	  sudo sed -i "s|\/\$home|${HOME}|g" $filename
-	  sudo sed -i "s|\/\$site|/$site|g" $filename
-	  sudo sed -i "s|\$servername|$servername|g" $filename
-	  sudo sed -i "s|\$env|$site|g" $filename
+     sudo cp $env.conf  $filename
+     sudo sed -i "s|\/\$home|${HOME}|g" $filename
+     sudo sed -i "s|\/\$site|/$site|g" $filename
+     sudo sed -i "s|\$servername|$servername|g" $filename
+     sudo sed -i "s|\$env|$site|g" $filename
 		
-	  sudo a2ensite $conffile &> /dev/null
+     sudo a2ensite $conffile &> /dev/null
 	
-	  conffile=$sitenum-$site-ssl.conf
-	  filename=/etc/apache2/sites-available/$conffile
-	  servername=$site.loc
+     conffile=$sitenum-$site-ssl.conf
+     filename=/etc/apache2/sites-available/$conffile
+     servername=$site.loc
 
-	  sudo cp env.ssl.conf  $filename
-	  sudo sed -i "s|\/\$home|${HOME}|g" $filename
-	  sudo sed -i "s|\/\$site|/$site|g" $filename
-	  sudo sed -i "s|\$servername|$servername|g" $filename
-	  sudo sed -i "s|\$env|$site|g" $filename
-		
-	  sudo a2ensite $conffile &> /dev/null
-	fi
+     sudo cp env.ssl.conf  $filename
+     sudo sed -i "s|\/\$home|${HOME}|g" $filename
+     sudo sed -i "s|\/\$site|/$site|g" $filename
+     sudo sed -i "s|\$servername|$servername|g" $filename
+     sudo sed -i "s|\$env|$site|g" $filename
+
+     sudo a2ensite $conffile &> /dev/null
+  fi
 }	
 
 # Generate an SSL certificate (self-signed).
 # self_sign(path, subj) where path is the path to create the ssl certificate directory, and subj are certificate parameters (openssl -subj parameter)
 function self_sign()
 {
-	echo "Generating certificate."
+  echo "Generating certificate."
 
-	path=$1/ssl
-	subj=$2
-	privkey=$path/privkey.key
-	pubkey=$path/pubkey.crt
+  path=$1/ssl
+  subj=$2
+  privkey=$path/privkey.key
+  pubkey=$path/pubkey.crt
 	
-	sudo sh -c "if [ ! -d $path ]; then mkdir $path; chmod 700 $path; fi"
-	sudo sh -c "if [ -f $privkey ]; then rm $privkey; fi"
-	sudo sh -c "if [ -f $pubkey ]; then rm $pubkey; fi"
+  sudo sh -c "if [ ! -d $path ]; then mkdir $path; chmod 700 $path; fi"
+  sudo sh -c "if [ -f $privkey ]; then rm $privkey; fi"
+  sudo sh -c "if [ -f $pubkey ]; then rm $pubkey; fi"
 	
-	sudo openssl req -x509 -nodes -newkey rsa:2048 -days 365 -subj $subj -keyout $privkey -out $pubkey &> /dev/null
+  sudo openssl req -x509 -nodes -newkey rsa:2048 -days 365 -subj $subj -keyout $privkey -out $pubkey &> /dev/null
 
-	sudo chmod 600 $path/privkey.key $path/pubkey.crt
+  sudo chmod 600 $path/privkey.key $path/pubkey.crt
 }
 
 function installComposer()
 {
-	[[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}"
+  [[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}"
 
-	echo "Installing Composer..."
-	#Install composer version 1 using the --1 option
-	#url="https://getcomposer.org/download/latest-2.x/composer.phar"
-	url="https://getcomposer.org/installer"
-		#wget -o /dev/null -O installer $url
-    curl -sS $url -o /tmp/composer-setup.php
-    HASH=`curl -sS https://composer.github.io/installer.sig`
-    echo $HASH
-    php -r "if (hash_file('SHA384', '/tmp/composer-setup.php') === '$HASH') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo  PHP_EOL;"
-	local _result=$?
+  echo "Installing Composer..."
+  #Install composer version 1 using the --1 option
+  #url="https://getcomposer.org/download/latest-2.x/composer.phar"
+  url="https://getcomposer.org/installer"
+  curl -sS $url -o /tmp/composer-setup.php
+  HASH=`curl -sS https://composer.github.io/installer.sig`
+  echo $HASH
+  php -r "if (hash_file('SHA384', '/tmp/composer-setup.php') === '$HASH') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo  PHP_EOL;"
+  local _result=$?
 
-	if [[ $_result != 0 ]]; then
-		if [[ ! -f installer ]]; then
-			echo "Error downloading composer installer, and no cached copy exists.  My soul weeps."
-			exit 1
-		else
-			echo "Error downloading composer installer.  Using a cached copy."
-		fi
-	fi
+  if [[ $_result != 0 ]]; then
+    if [[ ! -f installer ]]; then
+      echo "Error downloading composer installer, and no cached copy exists.  My soul weeps."
+      exit 1
+    else
+      echo "Error downloading composer installer.  Using a cached copy."
+    fi
+  fi
 
-	sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+  sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
 	
-	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
+  [[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 }
 
+# Install Visual Studio for development environment
 function setupVSCode()
 {
   # Add Microsoft GPG key
@@ -386,7 +379,7 @@ function setupVSCode()
   sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
 
   # Get the repository
-  echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
+  echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" |     sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
   rm packages.microsoft.gpg
 
   # Perform the install
@@ -396,36 +389,35 @@ function setupVSCode()
 
 function createProjectDirs()
 {
-	[[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}"
+  [[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}"
 
-	echo "Configuring project directories..."
-	if [ -d $HOME/web-projects ]; then
-		echo "Directory exists!"; jobs
-		read -e -N 1 -p 'web-projects directory exists!  Delete? [y/N]? ' ans
-		if [[ $ans =~ [Yy] ]]; then		
-			echo "Deleting old web-projects."			
-			sudo chown -R	$USER:$USER $HOME/web-projects		
-			#Don't delete backup directory to keep files symlinks working.
-			for env in dev stage prod
-			do
-				rm -rf $HOME/web-projects/$env
-			done
+  echo "Configuring project directories..."
+  if [ -d $HOME/web-projects ]; then
+    echo "Directory exists!"; jobs
+    read -e -N 1 -p 'web-projects directory exists!  Delete? [y/N]? ' ans
+    if [[ $ans =~ [Yy] ]]; then		
+      echo "Deleting old web-projects."			
+      sudo chown -R $USER:$USER $HOME/web-projects		
+      # Don't delete backup directory to keep files symlinks working.
+      for env in dev stage prod
+      do
+        rm -rf $HOME/web-projects/$env
+      done
+    else
+      [[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
+      return
+    fi
+  fi
 
-		else
-			[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
-			return
-		fi
-	fi
+   #Make project directories -- including intermediate directories.
+   #Need to create all the way to "files" so we can automate symlink to files later
+   if [ ! -d $HOME/web-projects/backup/files ]
+   then
+     echo "Making project directories"
+     mkdir -p $HOME/web-projects/backup/files
+   fi
 
-	#Make project directories -- including intermediate directories.
-	#Need to create all the way to "files" so we can automate symlink to files later
-	if [ ! -d $HOME/web-projects/backup/files ]
-	then
-		echo "Making project directories"
-		mkdir -p $HOME/web-projects/backup/files
-	fi
-
-	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"	
+   [[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"	
 }
 
 function configureNPM()

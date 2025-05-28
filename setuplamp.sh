@@ -55,13 +55,16 @@ if [ $LAMPonly == "N" ]; then
 
   read -p "Git repository containing the Drupal site [miraweb2024]: " repository
   repository=${repository:-git@github.com:miramar-webmaster/miraweb2024}
+  echo $repository
 
   read -p "Drupal database name [sdmc]: " drupal_db
   drupal_db=${drupal_db:-sdmc}
-
+  echo $drupal_db
+  
   read -p "Drupal database user [drupal]: " drupal_user
   drupal_user=${drupal_user:-drupal}
-
+  echo $drupal_user
+  
   default_password=$(tr -dc 'A-Za-z0-9!?%=' < /dev/urandom | head -c 10)
 
   read -p "Drupal database password [a random one will be generated]: " drupal_pass
