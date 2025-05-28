@@ -6,20 +6,6 @@
 arrScriptsLoaded+=("b6153465-48c2-440a-964f-427c7aca895c")
 [[ "${arrScriptsLoaded[@]}" =~ "6581a047-37eb-4384-b15d-14478317fb11" ]] || source functions.sh
 
-#TODO: Is this even needed?
-function preInstall 
-{
-    echo "Depricated function called: pre_install in install-docker.sh"
-    exit
-
-    #This was the original set of packages:
-    #apt install -y apt-transport-https ca-certificates curl gnupg lsb-release cifs-utils git
-
-    #Minimalist approach
-    addPackages "apt-transport-https ca-certificates curl gnupg lsb-release"
-}
-
-#TODO: 
 function setupDockerRepository 
 {
 #    [[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}"
@@ -38,7 +24,7 @@ function setupDockerRepository
 	sudo apt update
 
     #Add Docker's GPG Key
-    sudo apt install ca-certificates curl gnupg lsb-release git
+    sudo apt install ca-certificates curl gnupg lsb-release
     sudo install -m 0755 -d /etc/apt/keyrings
     sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
     sudo chmod 444 /etc/apt/keyrings/docker.asc

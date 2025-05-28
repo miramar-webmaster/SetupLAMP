@@ -8,137 +8,130 @@
 aptPackages=""		#Global list of packages to install
 arrScriptsLoaded+=("6581a047-37eb-4384-b15d-14478317fb11")
 
-repository="git@github.com:m iramar-webmaster/miraweb2024"
+repository="git@github.com:miramar-webmaster/miraweb2024"
 
 function isScriptLoaded
 {
-	_result=0	#0=false/Not loaded
-	if [[ "${arrScriptsLoaded[@]}" =~ "$1" ]]; then
-		_result=1
-	fi
-
-	return $_result
+  _result=0	#0=false/Not loaded
+  if [[ "${arrScriptsLoaded[@]}" =~ "$1" ]]; then
+    _result=1
+  fi
+  return $_result
 }
 
 function scriptsLoaded
 {
-	for script in "${arrScriptsLoaded[@]}"
-	do
-		echo $script
-	done
+  for script in "${arrScriptsLoaded[@]}"
+  do
+    echo $script
+  done
 }
 
 function showhelp
 {
-	echo 'Usage: SetupLAMP.sh [OPTIONS]'
-	cat setuplamp-help.txt
-
-	exit 1
+  echo 'Usage: setuplamp.sh then follow prompts'
+  #TODO: Rewrite help file ************************
+  cat setuplamp-help.txt
+  exit 1
 }
 
 function isInstalled()
 {
-	packagename=$1
+  packagename=$1
 
-	PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $packagename | grep "install ok installed")
+  PKG_OK=$(dpkg-query -W --showformat='${Status}\n' $packagename | grep "install ok installed")
 
-	if [ "" == "$PKG_OK" ]; then
-		return 0 #False
-	else
-		return 1 #Less false
-	fi
+  if [ "" == "$PKG_OK" ]; then
+    return 0 #False
+  else
+    return 1 #Less false
+  fi
 }
 
 #Adds a single package to list of packages to install
 function addPackage
 {
-	pkg=$1
-	status=0
+  pkg=$1
+  status=0
 
-	isInstalled $pkg &> /dev/null
-	if [ "$?" == "0" ]; then
-		echo "Adding package: $pkg"
-		#Add a space between package names
-		#[[ "$pkg" != ""  ]] && $pkg="$pkg "
-		aptPackages+=" $1"
-		
-	else
-		echo "Package already installed: $pkg"
-		status=-1
-	fi
-
-	return $status
+  isInstalled $pkg &> /dev/null
+  if [ "$?" == "0" ]; then
+    echo "Adding package: $pkg"
+    #Add a space between package names
+    #[[ "$pkg" != ""  ]] && $pkg="$pkg "
+    aptPackages+=" $1"	
+  else
+    echo "Package already installed: $pkg"
+    status=-1
+  fi
+  return $status
 }
 
 #Adds a space-delimited list of packages to the global list
 function addPackages
 {
-	packages=$1
-	ilist=""	#list of already installed packages
+  packages=$1
+  ilist=""	#list of already installed packages
 
-	if [ "$packages" == "" ]; then
-		echo "ERROR: addPackages called with empty list!  The Earth will now plunge directly into the Sun."
-		exit 1
-	fi
+  if [ "$packages" == "" ]; then
+    echo "ERROR: addPackages called with empty list!  The Earth will now plunge directly into the Sun."
+    exit 1
+  fi
 
-  	for package in $packages
-	do
-		addPackage $package
-		[[ $? -ne 0 ]] && ilist="$ilist $package"
-	done
-
-	echo; echo
-
-	if [ "$ilist" != "" ]; then
-		echo "The following packages were already installed:$ilist"
-	fi
-
+  for package in $packages
+  do
+    addPackage $package
+    [[ $? -ne 0 ]] && ilist="$ilist $package"
+  done
+  echo; echo
+  if [ "$ilist" != "" ]; then
+    echo "The following packages were already installed:$ilist"
+  fi
 }
 
 #Installs packages.  Packages must be added to global list via addPackage(s) functions.
 #Arg1 = cacheonly setting
 function installPackages
 {
-	[[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}"
+  [[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}"
 
-	_aptArgs=""	#Arguments for the apt command
-	_msg="Installing: "
+  _aptArgs=""	#Arguments for the apt command
+  _msg="Installing: "
 
-	#Check for cache-only option
-	_aptArgs="-y"
-	if [ "$_cacheOnly" == "Y" ]; then
-		_aptArgs+=" --download-only"
-		_msg="Caching: "
-	fi
+  #Check for cache-only option
+  _aptArgs="-y"
+  if [ "$_cacheOnly" == "Y" ]; then
+    _aptArgs+=" --download-only"
+    _msg="Caching: "
+  fi
 
-	#Install using global variable that has been put through the addPackage process
-	if [ "$nopackages" == "Y" ]; then
-		echo "Skipping package installs."
-		return 0
-	else
-		if [ "$aptPackages" != "" ]; then
-			echo "$_msg [$aptPackages]"
-			sudo apt install $_aptArgs $aptPackages
-			local _result=$?
-			if [ $_result != 0 ]; then
-				echo "Error installing packages."
-				exit 1
-			fi
-		else
-			echo "Nothing to install."
-		fi
-	fi
+  #Install using global variable that has been put through the addPackage process
+  if [ "$nopackages" == "Y" ]; then
+    echo "Skipping package installs."
+    return 0
+  else
+    if [ "$aptPackages" != "" ]; then
+      echo "$_msg [$aptPackages]"
+      sudo apt install $_aptArgs $aptPackages
+      local _result=$?
+      if [ $_result != 0 ]; then
+        echo "Error installing packages."
+        exit 1
+      fi
+    else
+      echo "Nothing to install."
+    fi
+  fi
 
-	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
-
+  [[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 }
    
 function getPassword()
 {
-	read -sp "$1" $2
-	echo
+  read -sp "$1" $2
+  echo
 }
-
+#TODO: Can it still be done this way? Is there a better way?
 #Must pass password as first argument.
 function setupShare()
 {
@@ -146,76 +139,74 @@ function setupShare()
 
 	if [ "$setupshare" == "Y" ]
 	then
-		
-		pw=$1
-		
-		for path in "/root/.cifs" "/mnt/backup"
-		do
-			sudo sh -c "if [ ! -d $path ]; then sudo mkdir $path; fi"
-		done
+          pw=$1
+          for path in "/root/.cifs" "/mnt/backup"
+	  do
+	    sudo sh -c "if [ ! -d $path ]; then sudo mkdir $path; fi"
+          done
 
-		echo "username=backup" >> sdmiramar-backups
-		echo "domain=ics_miramar" >> sdmiramar-backups
-		echo "password=$pw" >> sdmiramar-backups
-		sudo mv sdmiramar-backups /root/.cifs
-		sudo chmod -R 700 /root/.cifs
+	  echo "username=backup" >> sdmiramar-backups
+	  echo "domain=ics_miramar" >> sdmiramar-backups
+	  echo "password=$pw" >> sdmiramar-backups
+	  sudo mv sdmiramar-backups /root/.cifs
+	  sudo chmod -R 700 /root/.cifs
 
-		if ! grep -q "#SCRIPTID: 6581a047-37eb-4384-b15d-14478317fb11" /etc/fstab 
-		then
-			cat fstab | sudo tee -a /etc/fstab
-			sudo mount -a
-		fi
+	  if ! grep -q "#SCRIPTID: 6581a047-37eb-4384-b15d-14478317fb11" /etc/fstab 
+	  then
+	    cat fstab | sudo tee -a /etc/fstab
+	    sudo mount -a
+	  fi
 	else
-		echo "Skipping share setup."
+	  echo "Skipping share setup."
 	fi
 
-	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
+	[[     "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 
 }
 
 function addHosts()
 {
-	if ! grep -q "#SCRIPTID: 6581a047-37eb-4384-b15d-14478317fb11" /etc/hosts
-	then
-		cat hosts | sudo tee -a /etc/hosts
-	fi
+  if ! grep -q "#SCRIPTID: 6581a047-37eb-4384-b15d-14478317fb11" /etc/hosts
+  then
+    cat hosts | sudo tee -a /etc/hosts
+  fi
 }
 
 function addBashAliases()
 {
-	if [ ! -f ~/.bash_aliases ] || ! grep -q "#SCRIPTID: c177481e-790d-4354-a596-c7aae6b0d152" ~/.bash_aliases
-	then
-		echo "Copying bash_aliases."
-		cat bash_aliases.sh >> ~/.bash_aliases
-	fi
+  if [ ! -f ~/.bash_aliases ] || ! grep -q "#SCRIPTID: c177481e-790d-4354-a596-c7aae6b0d152" ~/.bash_aliases
+  then
+    echo "Copying bash_aliases."
+    cat bash_aliases.sh >> ~/.bash_aliases
+  fi
 }
 
 #This function handles the skipLAMP/LAMPonly flags.
 ##Arg1 = cacheonly flag
 function ubuntuAddPackages()
 {
-    # Housekeeping packages
-    packages="samba cifs-utils"
-	# PHP and all needed extensions
-    packages="$packages php8.1 php8.1-mysqli php8.1-mysqlnd php8.1-imap php8.1-xml php8.1-xmlreader php8.1-xmlwriter php8.1-xmlrpc php8.1-curl php8.1-gd php8.1-imagick php8.1-cli php8.1-ctype php8.1-gettext php8.1-dev php8.1-imap php8.1-mbstring php8.1-opcache php-memcached php8.1-readline php8.1-soap php8.1-zip php8.1-intl php8.1-bz2 php8.1-shmop php8.1-dom php-zip"
-	# MySQL
-    packages="$packages mysql-server-8.0 mysql-client-8.0"
-	# Apache
-    packages="$packages apache2 libapache2-mod-php8.1"       
-	# Sendmail
-	if [$env == 'prod']; then
-      packages="$packages sendmail"
-	elif [ $env == 'dev' || $env == 'stage' ]; then
-      installMailhog
-	fi
-	# Set default password for MySQL so install script does not hang in the middle waiting for user input.
-	sudo debconf-set-selections <<< "mysql-server mysql-server/root_password select $mysql_password"
-	sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again select $mysql_password"
-	cp my.cnf ~/.my.cnf
-	sudo sed -i "s|\$PWD|${mysql_password}|g" ~/.my.cnf
-	sudo chmod 600 ~/.my.cnf
-
-	addPackages "$packages"            
+  # Housekeeping packages
+  packages="samba cifs-utils"
+  # PHP and all needed extensions
+  packages="$packages php8.1 php8.1-mysqli php8.1-mysqlnd php8.1-imap php8.1-xml php8.1-xmlreader php8.1-xmlwriter php8.1-xmlrpc php8.1-curl php8.1-gd php8.1-imagick php8.1-cli php8.1-ctype php8.1-gettext php8.1-dev php8.1-imap php8.1-mbstring php8.1-opcache php-memcached php8.1-readline php8.1-soap php8.1-zip php8.1-intl php8.1-bz2 php8.1-shmop php8.1-dom php-zip"
+  # MySQL
+  packages="$packages mysql-server-8.0 mysql-client-8.0"
+  # Apache
+  packages="$packages apache2 libapache2-mod-php8.1"       
+  # Sendmail or Mailhog
+  if [$env == 'prod']; then
+    packages="$packages sendmail"
+  elif [ $env == 'dev' || $env == 'stage' ]; then
+    installMailhog
+  fi
+  # Set default password for MySQL so install script does not hang in the middle waiting for user input.
+  sudo debconf-set-selections <<< "mysql-server mysql-server/root_password select $mysql_password"
+  sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again select $mysql_password"
+  cp my.cnf ~/.my.cnf
+  sudo sed -i "s|\$PWD|${mysql_password}|g" ~/.my.cnf
+  sudo chmod 600 ~/.my.cnf
+    
+  addPackages "$packages"            
 }
 
 function installMailhog()
@@ -233,39 +224,36 @@ function installMailhog()
 #Install PPA for node.js
 function setupNodeRepository()
 {
-	#If node version is not specified, use system default repository and just add npm
-	#If we add only npm after changing repository, we get dependency errors.
-	if [ "$nodeVersion" == "" ]; then
-		addPackages "npm"
-		return 0
-	fi
+  #If node version is not specified, use system default repository and just add npm
+  #If we add only npm after changing repository, we get dependency errors.
+  if [ "$nodeVersion" == "" ]; then
+    addPackages "npm"
+    return 0
+  fi
 
-	echo "Installing node.js version: $nodeVersion"     
+  echo "Installing node.js version: $nodeVersion"     
+  nodeVersion="setup_$nodeVersion.x"
+  url="https://deb.nodesource.com/$nodeVersion"
+  wget -q -O nodePrep.sh $url
+  if [ $? != 0 ]; then
+    echo "Error setting up PPA for node.js, therefore surrender."
+    exit 1
+  fi
 
-	nodeVersion="setup_$nodeVersion.x"
-	url="https://deb.nodesource.com/$nodeVersion"
+  #This avoids a chmod to make the file executable
+  cat nodePrep.sh | sudo -E bash -
+  rm nodePrep.sh
 
-	wget -q -O nodePrep.sh $url
-	if [ $? != 0 ]; then
-		echo "Error setting up PPA for node.js, therefore surrender."
-		exit 1
-	fi
-
-	#This avoids a chmod to make the file executable
-	cat nodePrep.sh | sudo -E bash -
-	rm nodePrep.sh
-
-	#Don't add npm, as the new repository installs npm as part of nodejs.
-	addPackage "nodejs"
+  #Don't add npm, as the new repository installs npm as part of nodejs.
+  addPackage "nodejs"
 }
 
 function setupDocker
 {
-	# Docker and Compose
+    # Docker and Compose
     sudo apt update
     sudo groupadd docker
-    sudo usermod -a -G docker $USER
-             
+    sudo usermod -a -G docker $USER      
 }
 
 function setupPHPRepository

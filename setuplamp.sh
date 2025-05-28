@@ -84,7 +84,6 @@ setupPHPRepository
 
 addPackages "docker-ce docker-ce-cli docker-compose containerd.io" && ubuntuAddPackages
 installPackages
-			              
 configureGit
 installComposer
 if [ $LAMPonly == "N" ]; then
@@ -114,21 +113,20 @@ if [ $LAMPonly == "N" ]; then
   initDatabases #& initDatabasesProc=$!
   configureDrupalSettings
 fi
-
 		
   #wait $installComposerProc
 		
   configureProjects & configProjectsProc=$!
-	echo "***************************************************************"
-	sg docker "docker pull memcached"
-	sg docker "docker run --name memcache --restart always -p 11211:11211 -d memcached"
-	echo "***************************************************************"
+  echo "***************************************************************"
+  sg docker "docker pull memcached"
+  sg docker "docker run --name memcache --restart always -p 11211:11211 -d memcached"
+  echo "***************************************************************"
 		
-	#Wait for any outstanding stuff to finish
-	echo "Waiting for any background jobs to complete..."
-	wait #$configProjectsProc $restoreDatabaseProc
-	configure_apache
-	sudo apache2ctl restart
+  #Wait for any outstanding stuff to finish
+  echo "Waiting for any background jobs to complete..."
+  wait #$configProjectsProc $restoreDatabaseProc
+  configure_apache
+  sudo apache2ctl restart
 
 
 
