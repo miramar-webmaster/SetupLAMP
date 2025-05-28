@@ -55,7 +55,7 @@ then
   esac
 
   read -p "Git repository containing the Drupal site [miraweb2024]: " repository
-  repository=${repository:-git@github.com:miramar-webmaster/miraweb2024}
+  repository=${repository:-git@github.com:miramar-webmaster/miraweb2024.git}
   echo $repository
 
   read -p "Drupal database name [sdmc]: " drupal_db
