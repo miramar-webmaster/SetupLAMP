@@ -30,7 +30,7 @@ function restoreArchiveFromMount()
 	if [ -d web ]; then sudo mv web oldweb; fi
 	tar -xf $bkfile
 	if [ $? != 0 ]; then
-		echo "Failed to untar $bkfile.  I am bereft of all hope."
+		echo "Failed to untar $bkfile."
 		sudo mv oldweb web
 		popd
 		return 5

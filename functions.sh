@@ -193,33 +193,32 @@ function ubuntuAddPackages()
   # MySQL
   packages="$packages mysql-server-8.0 mysql-client-8.0"
   # Apache
-  packages="$packages apache2 libapache2-mod-php8.1"       
-  # Sendmail or Mailhog
-  if [$env == 'prod']; then
-    packages="$packages sendmail"
-  elif [ $env == 'dev' || $env == 'stage' ]; then
-    installMailhog
-  fi
+  packages="$packages apache2 libapache2-mod-php8.1"
   # Set default password for MySQL so install script does not hang in the middle waiting for user input.
-  sudo debconf-set-selections <<< "mysql-server mysql-server/root_password select $mysql_password"
-  sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again select $mysql_password"
+  sudo debconf-set-selections <<< "mysql-server mysql-server/root_password select $mysql_pass"
+  sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again select $mysql_pass"
   cp my.cnf ~/.my.cnf
-  sudo sed -i "s|\$PWD|${mysql_password}|g" ~/.my.cnf
+  sudo sed -i "s|\$PWD|${mysql_pass}|g" ~/.my.cnf
   sudo chmod 600 ~/.my.cnf
     
   addPackages "$packages"            
 }
 
-function installMailhog()
+function setupEmail()
 {
-  sudo apt-get install golang-go
-  mkdir ~/gocode
-  echo "export GOPATH=$HOME/gocode" >> ~/.profile
-  source ~/.profile
-  go install github.com/mailhog/MailHog@latest
-  go install github.com/mailhog/mhsendmail@latest
-  sudo cp ~/gocode/bin/MailHog /usr/local/bin/mailhog
-  sudo cp ~/gocode/bin/mhsendmail /usr/local/bin/mhsendmail
+  # Installs Sendmail for prod, otherwise Mailhog
+  if [$env == 'prod']; then
+    addPackage sendmail
+  elif [ $env == 'dev' || $env == 'stage' ]; then
+    sudo apt-get install golang-go
+    mkdir ~/gocode
+    echo "export GOPATH=$HOME/gocode" >> ~/.profile
+    source ~/.profile
+    go install github.com/mailhog/MailHog@latest
+    go install github.com/mailhog/mhsendmail@latest
+    sudo cp ~/gocode/bin/MailHog /usr/local/bin/mailhog
+     sudo cp ~/gocode/bin/mhsendmail /usr/local/bin/mhsendmail
+  fi
 }
 
 #Install PPA for node.js
@@ -228,7 +227,7 @@ function setupNodeRepository()
   #If node version is not specified, use system default repository and just add npm
   #If we add only npm after changing repository, we get dependency errors.
   if [ "$nodeVersion" == "" ]; then
-    addPackages "npm"
+    addPackage "npm"
     return 0
   fi
 
@@ -366,7 +365,7 @@ function installComposer()
 
   if [[ $_result != 0 ]]; then
     if [[ ! -f installer ]]; then
-      echo "Error downloading composer installer, and no cached copy exists.  My soul weeps."
+      echo "Error downloading composer installer, and no cached copy exists. Exiting"
       exit 1
     else
       echo "Error downloading composer installer.  Using a cached copy."
@@ -376,6 +375,11 @@ function installComposer()
   sudo php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
 	
   [[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
+}
+
+function cleanupInstall()
+{
+  sudo update-alternatives --set php /usr/bin/php8.1
 }
 
 # Install Visual Studio for development environment
@@ -404,7 +408,7 @@ function createProjectDirs()
     read -e -N 1 -p 'web-projects directory exists!  Delete? [y/N]? ' ans
     if [[ $ans =~ [Yy] ]]; then		
       echo "Deleting old web-projects."			
-      sudo chown -R $USER:$USER $HOME/web-projects		
+      sudo chown -R $USER:$USER $HOME/web-projects	
       # Don't delete backup directory to keep files symlinks working.
       for env in dev stage prod
       do
@@ -457,10 +461,10 @@ function configureProjects()
 
 		#Link files directory to restored archive
 		echo "Cloning website repository..."
-		git clone $repository $projectdir/dev
+		git clone $repository $projectdir
 
 		#Now go to tip of production and get all dependencies
-		pushd $projectdir/dev > /dev/null
+		pushd $projectdir > /dev/null
 		git checkout Production
 		composer install --no-dev # > /dev/null 2>&1 # & p1=$!
 		cd $projectdir/dev/docroot/themes/custom/sdmc
@@ -516,7 +520,7 @@ function restoreArchive
 		echo "Restoring: $_file..."
 		tar -xzf $_file
 		if [ $? != 0 ]; then
-			echo "Failed to untar $_file.  I am bereft of all hope."
+			echo "Failed to untar $_file."
 			popd
 			return 5
 		fi
@@ -548,14 +552,14 @@ function initDatabases()
 		sed "s|\$d8user|${d8user}|" createdb.sql > cdb.sql
 		sed -i "s|\$d8password|${d8password}|" cdb.sql
 		
-		mysql -u root --password=$mysql_password < cdb.sql
+		mysql -u root --password=$mysql_pass < cdb.sql
 		rm cdb.sql
 
 		#gunzip -c $drupal_db > sdmiramar.sql
 		echo "Restoring $drupal_db..."	
-		mysql -u root --password=$mysql_password d8dev < $drupal_db &> /dev/null & p1=$!
-		mysql -u root --password=$mysql_password d8prod < $drupal_db &> /dev/null & p2=$!
-		mysql -u root --password=$mysql_password d8stage < $drupal_db &> /dev/null & p3=$!
+		mysql -u root --password=$mysql_pass d8dev < $drupal_db &> /dev/null & p1=$!
+		mysql -u root --password=$mysql_pass d8prod < $drupal_db &> /dev/null & p2=$!
+		mysql -u root --password=$mysql_pass d8stage < $drupal_db &> /dev/null & p3=$!
 		
 	fi
 	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"

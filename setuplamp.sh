@@ -84,17 +84,18 @@ done
 setupDockerRepository
 setupNodeRepository
 setupPHPRepository
-
+setupEmail
 ubuntuAddPackages
+
+# Install base packages 
 installPackages
 configureDocker
 configureGit
 installComposer
+cleanupInstall
 if [ $LAMPonly == "N" ]; then
   echo "Creating bash aliases..."
   addBashAliases
-
-  #The ubuntu_install_packages handles the LAMP flags (skipLAMP/LAMPonly)
   createProjectDirs
   echo "Stopping apache."
   sudo apache2ctl stop &> /dev/null
@@ -103,7 +104,6 @@ if [ $LAMPonly == "N" ]; then
   fi
   echo "Waiting for restoreArchiveProc ($restoreArchiveProc) to finish..."
   wait $restoreArchiveProc
-
 
   #Set the database backup filename if not already provided...
   #We must do this here since the untar is ran in the background...
@@ -115,12 +115,12 @@ if [ $LAMPonly == "N" ]; then
   fi
   popd
   initDatabases #& initDatabasesProc=$!
+  configureProjects & configProjectsProc=$!
   configureDrupalSettings
 fi
 		
   #wait $installComposerProc
 		
-  configureProjects & configProjectsProc=$!
   echo "***************************************************************"
   sg docker "docker pull memcached"
   sg docker "docker run --name memcache --restart always -p 11211:11211 -d memcached"
