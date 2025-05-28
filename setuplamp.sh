@@ -12,8 +12,7 @@ hostname=$(hostname)
 LAMPonly="N"
 
 while true; do
-  #read -p "Set up LAMP without Drupal? (y/N): " -n 1 -r response
-read -e -i "N" -p "Are you sure? [y/N] " response  echo
+read -e -i "N" -p "Set up LAMP without Drupal? [y/N] " response
   if [[ "$response" =~ ^[Yy]$ ]]
   then
     echo "Yes"

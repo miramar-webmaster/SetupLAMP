@@ -448,8 +448,8 @@ function configureProjects()
 	[[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}"
 
 	projectdir=$HOME/web-projects
-	
-	if [ ! -d $projectdir/dev ]
+
+	if [ ! -d $projectdir ]
 	then
 		#Get the dev directory configured fully, then copy it to prog/stage
 		# 1. Clone
