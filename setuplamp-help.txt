@@ -1,0 +1,21 @@
+This is the help file for the SetupLAMP script suite.
+
+REQUIREMENTS:
+=============
+
+You will need a bare Ubuntu 24.04+ install in a virtual machine.
+
+You will need to have Git installed, and a PGP key set up for your Github account.
+
+PROCEDURE:
+===========
+
+Using Git, clone this repository to your Linux desktop.
+
+git clone git@github.com:miramar-webmaster/SetupLAMP.git
+
+go into the SetupLAMP directory.
+
+Run chmod +x *.sh, just in case.
+
+Run ./setuplamp.sh and follow the prompts.
