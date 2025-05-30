@@ -316,7 +316,7 @@ function configure_apache()
      sudo a2ensite $conffile &> /dev/null
 	
      conffile=$sitenum-$site-ssl.conf
-     filename=/etc/apache2/sites-available/$conffile
+     filename="/etc/apache2/sites-available/$conffile"
      servername=$site.loc
 
      sudo cp env.ssl.conf  $filename
