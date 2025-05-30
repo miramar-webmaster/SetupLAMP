@@ -30,7 +30,6 @@ read -e -i "N" -p "Set up LAMP without Drupal? [y/N] " response
     echo "Invalid input. Try again."
   fi
 done
-
 LAMPonly=$response
 
 if [ $LAMPonly = "N" ]
@@ -53,6 +52,7 @@ then
       3) env="prod" ;;
       *) echo other ;;
   esac
+  echo $env
 
   read -p "Git repository containing the Drupal site [miraweb2024]: " repository
   repository=${repository:-git@github.com:miramar-webmaster/miraweb2024.git}
@@ -72,28 +72,32 @@ then
   drupal_pass=${default_password:-default_password}
   echo "Drupal password is " $drupal_pass
 
+  # TODO: Do we need this? How will it change?
   read -p "Password for backup share: " sharePW
-  sharePW=${default_password:-default_password}
+  sharePW=${share_password:-default_password}
 fi
 
 until read -r -p "MySQL Root password (REQUIRED): " mysql_pass && test "$mysql_pass" != ""; do
   continue
 done
 
-#Add the docker repositories, generate package list then cache & exit
-#NOTE: the script to setup the Node.js PPA will run apt-get update
+# Add the docker repositories, generate package list
+# NOTE: the script to setup the Node.js PPA will run apt-get update
+
 setupDockerRepository
 setupPHPRepository
 setupNodeRepository
 setupEmail
 ubuntuAddPackages
 
-# Install base packages 
+# Install base packages
+
 installPackages
 configureDocker
 configureGit
 installComposer
 cleanupInstall
+
 if [ $LAMPonly == "N" ]; then
   echo "Creating bash aliases..."
   addBashAliases

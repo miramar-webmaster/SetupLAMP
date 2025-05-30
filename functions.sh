@@ -160,8 +160,7 @@ function setupShare()
 	  echo "Skipping share setup."
 	fi
 
-	[[     "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
-
+	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 }
 
 function addHosts()
@@ -284,8 +283,10 @@ function configure_apache()
   #enable needed modules
   sudo a2enmod ssl rewrite &> /dev/null
 
+  if [ $LAMPonly = "N" ]; then
+  {
   # The items below are customizations for a Drupal dev/stage/prod installation
-  echo 'Customizing default LAMP for Drupal dev/stage/prod installation.'
+    echo 'Customizing default LAMP for Drupal dev/stage/prod installation.'
 	
   addHosts 
 
@@ -301,13 +302,12 @@ function configure_apache()
 
    self_sign '/etc/apache2' '/CN=*'
 	
-   if [ $LAMPonly == "N" ]; then
      sitenum=100
-     conffile=$sitenum-$env.conf
-     filename=/etc/apache2/sites-available/$conffile
-     servername=$site.loc
+     conffile="$sitenum-$env.conf"
+     filename="/etc/apache2/sites-available/$conffile"
+     servername="$site.loc"
 
-     sudo cp $env.conf  $filename
+     sudo cp     $env.conf  $filename
      sudo sed -i "s|\/\$home|${HOME}|g" $filename
      sudo sed -i "s|\/\$site|/$site|g" $filename
      sudo sed -i "s|\$servername|$servername|g" $filename

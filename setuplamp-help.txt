@@ -19,3 +19,12 @@ go into the SetupLAMP directory.
 Run chmod +x *.sh, just in case.
 
 Run ./setuplamp.sh and follow the prompts.
+
+You will have the option to install a bare LAMP server, without setting up the College website.
+
+If you don't choose that option, you will have the option for one of three environments:
+
+dev	Development
+stage	Staging
+prod	An emergency production site
+   
