@@ -93,10 +93,10 @@ ubuntuAddPackages
 # Install base packages
  
 installPackages
+cleanupInstall
 installComposer
 configureDocker
 configureGit
-cleanupInstall
 
 if [ $LAMPonly == "N" ]; then
   echo "Creating bash aliases..."

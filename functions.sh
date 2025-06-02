@@ -9,7 +9,7 @@ arrScriptsLoaded+=("6581a047-37eb-4384-b15d-14478317fb11")
 
 repository="git@github.com:miramar-webmaster/miraweb2024"
 
-function isScriptLoaded
+function isScriptLoaded()
 {
   _result=0	#0=false/Not loaded
   if [[ "${arrScriptsLoaded[@]}" =~ "$1" ]]; then
@@ -18,7 +18,7 @@ function isScriptLoaded
   return $_result
 }
 
-function scriptsLoaded
+function scriptsLoaded()
 {
   for script in "${arrScriptsLoaded[@]}"
   do
@@ -26,7 +26,7 @@ function scriptsLoaded
   done
 }
 
-function showhelp
+function showhelp()
 {
   echo 'Usage: setuplamp.sh then follow prompts'
   #TODO: Rewrite help file ************************
@@ -48,7 +48,7 @@ function isInstalled()
 }
 
 #Adds a single package to list of packages to install
-function addPackage
+function addPackage()
 {
   pkg=$1
   status=0
@@ -90,7 +90,7 @@ function addPackages
 
 #Installs packages.  Packages must be added to global list via addPackage(s) functions.
 #Arg1 = cacheonly setting
-function installPackages
+function installPackages()
 {
   [[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}"
 
@@ -246,7 +246,7 @@ function setupNodeRepository()
   addPackage "nodejs"
 }
 
-function setupPHPRepository
+function setupPHPRepository()
 {
   php_repo="ppa:ondrej/php"
   sudo add-apt-repository $php_repo # Press enter when prompted.
@@ -260,7 +260,7 @@ function configureDocker()
   sudo usermod -a -G docker $USER
 }
 
-function configureGit
+function configureGit()
 {
 	git config --global --bool core.autocrlf false
 	git config --global --bool core.safecrlf false
@@ -503,7 +503,7 @@ function configureDrupalSettings() # WORK NEEDED
 
 
 #Restore an archive into the web-projects/backup directory
-function restoreArchive
+function restoreArchive()
 {
 	[[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}"
 
@@ -562,7 +562,7 @@ function initDatabases()
 	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 }
 
-function setupContainers
+function setupContainers()
 {
 
   echo "***************************************************************"
