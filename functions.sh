@@ -67,7 +67,7 @@ function addPackage()
 }
 
 #Adds a space-delimited list of packages to the global list
-function addPackages
+function addPackages()
 {
   packages=$1
   ilist=""	#list of already installed packages

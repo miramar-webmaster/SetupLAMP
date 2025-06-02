@@ -84,17 +84,17 @@ done
 # Add the docker repositories, generate package list
 # NOTE: the script to setup the Node.js PPA will run apt-get update
 
-setupDockerRepository
 setupPHPRepository
-setupNodeRepository
-setupEmail
 ubuntuAddPackages
+setupNodeRepository
+setupDockerRepository
 
 # Install base packages
- 
+
 installPackages
 cleanupInstall
 installComposer
+setupEmail
 configureDocker
 configureGit
 
