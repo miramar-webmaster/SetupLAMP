@@ -303,7 +303,6 @@ function configure_apache()
   sudo a2enmod ssl rewrite &> /dev/null
 
   if [ $LAMPonly = "N" ]; then
-  {
   # The items below are customizations for a Drupal dev/stage/prod installation
     echo 'Customizing default LAMP for Drupal dev/stage/prod installation.'
 	
