@@ -272,6 +272,26 @@ function configureGit
 	git config --global core.excludesfile ~/.gitignore
 }
 
+# Generate an SSL certificate (self-signed).
+# self_sign(path, subj) where path is the path to create the ssl certificate directory, and subj are certificate parameters (openssl -subj parameter)
+function self_sign()
+{
+  echo "Generating certificate."
+
+  path=$1/ssl
+  subj=$2
+  privkey=$path/privkey.key
+  pubkey=$path/pubkey.crt
+	
+  sudo sh -c "if [ ! -d $path ]; then mkdir $path; chmod 700 $path; fi"
+  sudo sh -c "if [ -f $privkey ]; then rm $privkey; fi"
+  sudo sh -c "if [ -f $pubkey ]; then rm $pubkey; fi"
+	
+  sudo openssl req -x509 -nodes -newkey rsa:2048 -days 365 -subj $subj -keyout $privkey -out $pubkey &> /dev/null
+
+  sudo chmod 600 $path/privkey.key $path/pubkey.crt
+}
+
 function configure_apache()
 {
   wait #debug; ensure nothing else running in BG to avoid overlapped text
@@ -327,26 +347,6 @@ function configure_apache()
      sudo a2ensite $conffile &> /dev/null
   fi
 }	
-
-# Generate an SSL certificate (self-signed).
-# self_sign(path, subj) where path is the path to create the ssl certificate directory, and subj are certificate parameters (openssl -subj parameter)
-function self_sign()
-{
-  echo "Generating certificate."
-
-  path=$1/ssl
-  subj=$2
-  privkey=$path/privkey.key
-  pubkey=$path/pubkey.crt
-	
-  sudo sh -c "if [ ! -d $path ]; then mkdir $path; chmod 700 $path; fi"
-  sudo sh -c "if [ -f $privkey ]; then rm $privkey; fi"
-  sudo sh -c "if [ -f $pubkey ]; then rm $pubkey; fi"
-	
-  sudo openssl req -x509 -nodes -newkey rsa:2048 -days 365 -subj $subj -keyout $privkey -out $pubkey &> /dev/null
-
-  sudo chmod 600 $path/privkey.key $path/pubkey.crt
-}
 
 function installComposer()
 {
