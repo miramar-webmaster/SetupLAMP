@@ -91,11 +91,11 @@ setupEmail
 ubuntuAddPackages
 
 # Install base packages
-
+ 
 installPackages
+installComposer
 configureDocker
 configureGit
-installComposer
 cleanupInstall
 
 if [ $LAMPonly == "N" ]; then

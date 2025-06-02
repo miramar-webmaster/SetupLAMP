@@ -3,7 +3,6 @@
 #Add all needed packages using addPackage, then call installPackages
 #SCRIPTID: 6581a047-37eb-4384-b15d-14478317fb11
 
-
 #Global variables.
 aptPackages=""		#Global list of packages to install
 arrScriptsLoaded+=("6581a047-37eb-4384-b15d-14478317fb11")
@@ -100,10 +99,10 @@ function installPackages
 
   #Check for cache-only option
   _aptArgs="-y"
-  if [ "$_cacheOnly" == "Y" ]; then
-    _aptArgs+=" --download-only"
-    _msg="Caching: "
-  fi
+#  if [ "$_cacheOnly" == "Y" ]; then
+#    _aptArgs+=" --download-only"
+#    _msg="Caching: "
+#  fi
 
   #Install using global variable that has been put through the addPackage process
   if [ "$nopackages" == "Y" ]; then
@@ -199,7 +198,7 @@ function ubuntuAddPackages()
   cp my.cnf ~/.my.cnf
   sudo sed -i "s|\$PWD|${mysql_pass}|g" ~/.my.cnf
   sudo chmod 600 ~/.my.cnf
-    
+
   addPackages "$packages"            
 }
 
@@ -216,7 +215,7 @@ function setupEmail()
     go install github.com/mailhog/MailHog@latest
     go install github.com/mailhog/mhsendmail@latest
     sudo cp ~/gocode/bin/MailHog /usr/local/bin/mailhog
-     sudo cp ~/gocode/bin/mhsendmail /usr/local/bin/mhsendmail
+    sudo cp ~/gocode/bin/mhsendmail /usr/local/bin/mhsendmail
   fi
 }
 
@@ -301,11 +300,11 @@ function configure_apache()
   #sudo a2ensite 101-dev 102-stage 103-prod &> /dev/null
 
    self_sign '/etc/apache2' '/CN=*'
-	
+
      sitenum=100
      conffile="$sitenum-$env.conf"
      filename="/etc/apache2/sites-available/$conffile"
-     servername="$site.loc"
+     servername="$env.loc"
 
      sudo cp     $env.conf  $filename
      sudo sed -i "s|\/\$home|${HOME}|g" $filename
@@ -317,7 +316,7 @@ function configure_apache()
 	
      conffile=$sitenum-$site-ssl.conf
      filename="/etc/apache2/sites-available/$conffile"
-     servername=$site.loc
+     servername=$site.loc  
 
      sudo cp env.ssl.conf  $filename
      sudo sed -i "s|\/\$home|${HOME}|g" $filename
@@ -355,10 +354,9 @@ function installComposer()
 
   echo "Installing Composer..."
   #Install composer version 1 using the --1 option
-  #url="https://getcomposer.org/download/latest-2.x/composer.phar"
   url="https://getcomposer.org/installer"
   curl -sS $url -o /tmp/composer-setup.php
-  HASH=`curl -sS https://composer.github.io/installer.sig`
+  HASH= `curl -sS https://composer.github.io/installer.sig`
   echo $HASH
   php -r "if (hash_file('SHA384', '/tmp/composer-setup.php') === '$HASH') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo  PHP_EOL;"
   local _result=$?
@@ -390,7 +388,7 @@ function setupVSCode()
   sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
 
   # Get the repository
-  echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" |     sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
+  echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
   rm packages.microsoft.gpg
 
   # Perform the install
