@@ -21,7 +21,6 @@ function setupDockerRepository
     #Add git repository to get the very latest version of git.
     #This will automatically update the apt database.
     sudo add-apt-repository ppa:git-core/ppa
-	sudo apt update
 
     #Add Docker's GPG Key
     sudo apt install ca-certificates curl gnupg lsb-release
@@ -34,7 +33,8 @@ function setupDockerRepository
     "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
     $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
     sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt update
     
-    addPackages "docker-ce docker-ce-cli docker-compose containerd.io"
+    addPackages "docker-ce docker-ce-cli docker-compose-plugin containerd.io"
     [[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 }
