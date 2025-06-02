@@ -87,8 +87,11 @@ done
 setupPHPRepository
 ubuntuAddPackages
 setupNodeRepository
-setupDockerRepository
 setupEmail
+setupDockerRepository
+if [ $env == "dev" ]; then
+  setupVSCode
+fi
 
 # Install base packages
 
@@ -101,12 +104,12 @@ configureGit
 if [ $LAMPonly == "N" ]; then
   echo "Creating bash aliases..."
   addBashAliases
+  if [ $env = "dev" || $env = "stage" ]; then
+    configureDevMail
+  fi
   createProjectDirs
   echo "Stopping apache."
   sudo apache2ctl stop &> /dev/null
-  if [ $env == "dev" ]; then
-    setupVSCode
-  fi
   #echo "Waiting for restoreArchiveProc ($restoreArchiveProc) to finish..."
   #wait $restoreArchiveProc
 

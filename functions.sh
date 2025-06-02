@@ -208,7 +208,12 @@ function setupEmail()
   if [$env == 'prod']; then
     addPackage sendmail
   elif [ $env == 'dev' || $env == 'stage' ]; then
-    sudo apt install golang-go
+    addPackage golang-go
+  fi
+}
+
+function configureDevMail()
+{
     mkdir ~/gocode
     echo "export GOPATH=$HOME/gocode" >> ~/.profile
     source ~/.profile
@@ -216,7 +221,6 @@ function setupEmail()
     go install github.com/mailhog/mhsendmail@latest
     sudo cp ~/gocode/bin/MailHog /usr/local/bin/mailhog
     sudo cp ~/gocode/bin/mhsendmail /usr/local/bin/mhsendmail
-  fi
 }
 
 #Install PPA for node.js
@@ -392,7 +396,7 @@ function setupVSCode()
 
   # Perform the install
   sudo apt update
-  sudo apt install code
+  AddPackage code
 }
 
 function createProjectDirs()
