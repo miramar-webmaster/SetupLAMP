@@ -450,7 +450,7 @@ function configureProjects()
 
 	projectdir=$HOME/web-projects
 
-	if [ ! -d $projectdir ]
+	if [ -d $projectdir ]
 	then
 		#Get the dev directory configured fully, then copy it to prog/stage
 		# 1. Clone
