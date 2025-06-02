@@ -208,7 +208,7 @@ function setupEmail()
   if [$env == 'prod']; then
     addPackage sendmail
   elif [ $env == 'dev' || $env == 'stage' ]; then
-    sudo apt-get install golang-go
+    sudo apt install golang-go
     mkdir ~/gocode
     echo "export GOPATH=$HOME/gocode" >> ~/.profile
     source ~/.profile

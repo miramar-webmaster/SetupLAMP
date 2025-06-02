@@ -88,13 +88,13 @@ setupPHPRepository
 ubuntuAddPackages
 setupNodeRepository
 setupDockerRepository
+setupEmail
 
 # Install base packages
 
 installPackages
 cleanupInstall
 installComposer
-setupEmail
 configureDocker
 configureGit
 
