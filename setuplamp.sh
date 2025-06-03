@@ -107,7 +107,7 @@ configureGit
 if [ $LAMPonly == "N" ]; then
   echo "Creating bash aliases..."
   addBashAliases
-  if [ $env = "dev" || $env = "stage" ]; then
+  if [ $env = "dev" ] || [ $env = "stage" ]; then
     configureDevMail
   fi
   createProjectDirs
