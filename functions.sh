@@ -458,12 +458,11 @@ function configureProjects()
 		# 3. Composer install
 		# 4. Configure npm stuff
 		# 5. Create linked files directory
-                mkdir -p $env
 
 		#Link files directory to restored archive
 		echo "Cloning website repository..."
-		git clone $repository $env
-		mv $env $projectdir
+		git clone $repository $repo_folder
+		mv $repo_folder.* $projectdir
 
 		#Now go to tip of production and get all dependencies
 		pushd $projectdir > /dev/null

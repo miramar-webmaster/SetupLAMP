@@ -56,7 +56,10 @@ then
 
   read -p "Git repository containing the Drupal site [miraweb2024]: " repository
   repository=${repository:-git@github.com:miramar-webmaster/miraweb2024.git}
+  ext=".git"
+  repo_folder=$(basename "$repository" .git)
   echo $repository
+  echo $repo_folder
 
   read -p "Drupal database name [sdmc]: " drupal_db
   drupal_db=${drupal_db:-sdmc}
