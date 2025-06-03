@@ -207,7 +207,7 @@ function setupEmail()
   # Installs Sendmail for prod, otherwise Mailhog
   if [ $env == 'prod' ]; then
     addPackage sendmail
-  elif [ $env == 'dev' || $env == 'stage' ]; then
+  elif [ $env == 'dev' ] || [ $env == 'stage' ]; then
     addPackage golang-go
   fi
 }
