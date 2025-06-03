@@ -452,17 +452,18 @@ function configureProjects()
 
 	if [ -d $projectdir ]
 	then
-		#Get the dev directory configured fully, then copy it to prog/stage
+		#Get the project directory configured fully
 		# 1. Clone
 		# 2. Checkout Production
 		# 3. Composer install
 		# 4. Configure npm stuff
 		# 5. Create linked files directory
-
+                mkdir -p ./$env
 
 		#Link files directory to restored archive
 		echo "Cloning website repository..."
-		git clone $repository $projectdir
+		git clone $repository ./$env
+		mv ./$env $projectdir
 
 		#Now go to tip of production and get all dependencies
 		pushd $projectdir > /dev/null
@@ -488,22 +489,15 @@ function configureProjects()
 
 function configureDrupalSettings() # WORK NEEDED
 {
-	[[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}"
+	[[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}" 
 
-	local _env
-	for _env in dev stage prod
-	do
-          echo "Creating: $_dir"
-          [ ! -d $_dir ] && mkdir $_dir
-          settingsfile=$_dir/$_env.settings.php
-          sed "s|\$drupal_db|$drupal_db|" $_env.settings.php > $settingsfile
+          settingsfile=$projectdir/docroot/sites/default/settings/$env.settings.php
+          sed "s|\$drupal_db|$drupal_db|" $env.settings.php > $settingsfile
           sed -i "s|\$drupal_user|${drupal_user}|" $settingsfile
           sed -i "s|\$drupal_password|${drupal_password}|" $settingsfile
           sed -i "s|\$env|${_env}|" $settingsfile
-	done
 	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 }
-
 
 #Restore an archive into the web-projects/backup directory
 function restoreArchive()
