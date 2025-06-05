@@ -492,7 +492,7 @@ function configureDrupalSettings() # WORK NEEDED
 {
 	[[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}" 
 	  export SDMC_ENV=$env
-          settings_dir="$projectdir/docroot/sites/default/settings"
+          settings_dir="$projectdir/docroot/sites/default/"
           settingsfile="$projectdir/docroot/sites/default/settings/$env.settings.php"
           sudo chown -R $USER:$USER $HOME/web-projects	
           cp settings $settings_dir
