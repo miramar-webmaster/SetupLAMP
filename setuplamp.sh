@@ -64,11 +64,11 @@ then
   read -p "Drupal database name [sdmc]: " drupal_db
   drupal_db=${drupal_db:-sdmc}
   echo $drupal_db
-  
+
   read -p "Drupal database user [drupal]: " drupal_user
   drupal_user=${drupal_user:-drupal}
   echo $drupal_user
-  
+
   default_password=$(tr -dc 'A-Za-z0-9!?%=' < /dev/urandom | head -c 10)
 
   read -p "Drupal database password [a random one will be generated]: " drupal_pass
@@ -76,8 +76,8 @@ then
   echo "Drupal password is " $drupal_pass
 
   # TODO: Do we need this? How will it change?
-  read -p "Password for backup share: " sharePW
-  sharePW=${share_password:-default_password}
+  #read -p "Password for backup share: " sharePW
+  #sharePW=${share_password:-default_password}
 fi
 
 until read -r -p "MySQL Root password (REQUIRED): " mysql_pass && test "$mysql_pass" != ""; do

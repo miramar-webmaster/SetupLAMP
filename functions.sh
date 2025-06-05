@@ -329,7 +329,7 @@ function configure_apache()
      filename="/etc/apache2/sites-available/$conffile"
      servername="$env.loc"
 
-     sudo cp     $env.conf  $filename
+     sudo cp $env.conf  $filename
      sudo sed -i "s|\/\$home|${HOME}|g" $filename
      sudo sed -i "s|\/\$site|/$site|g" $filename
      sudo sed -i "s|\$servername|$servername|g" $filename
@@ -463,7 +463,7 @@ function configureProjects()
           echo "Cloning website repository..."
           git clone $repository $repo_folder
           wait
-          sudo chown -R $USER:$USER
+          sudo chown -R $USER:$USER $projectdir
           mv $repo_folder.* $projectdir
 
           #Now go to tip of production and get all dependencies
