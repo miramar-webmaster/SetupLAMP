@@ -448,7 +448,7 @@ function configureProjects()
 {
 	[[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}"
 
-	projectdir=$HOME/web-projects
+	projectdir="$HOME/web-projects"
 
 	if [ -d $projectdir ]
 	then
@@ -461,10 +461,10 @@ function configureProjects()
 
           #Link files directory to restored archive
           echo "Cloning website repository..."
-          git clone $repository $repo_folder
-          wait
           sudo chown -R $USER:$USER $projectdir
-          mv $repo_folder.* $projectdir
+          git clone $repository $projectdir/$repo_folder
+          wait
+         # mv $repo_folder $projectdir
 
           #Now go to tip of production and get all dependencies
           pushd $projectdir > /dev/null
