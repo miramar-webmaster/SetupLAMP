@@ -4,7 +4,7 @@
 #SCRIPTID: 6581a047-37eb-4384-b15d-14478317fb11
 
 #Global variables.
-aptPackages=""		#Global list of packages to install
+aptPackages=""  #Global list of packages to install
 arrScriptsLoaded+=("6581a047-37eb-4384-b15d-14478317fb11")
 
 repository="git@github.com:miramar-webmaster/miraweb2024"
@@ -334,7 +334,7 @@ function configure_apache()
      sudo sed -i "s|\/\$site|/$site|g" $filename
      sudo sed -i "s|\$servername|$servername|g" $filename
      sudo sed -i "s|\$env|$site|g" $filename
-		
+  
      sudo a2ensite $conffile &> /dev/null
 	
      conffile=$sitenum-$site-ssl.conf
@@ -407,8 +407,8 @@ function createProjectDirs()
   if [ -d $HOME/web-projects ]; then
     echo "Directory exists!"; jobs
     read -e -N 1 -p 'web-projects directory exists!  Delete? [y/N]? ' ans
-    if [[ $ans =~ [Yy] ]]; then		
-      echo "Deleting old web-projects."			
+    if [[ $ans =~ [Yy] ]]; then  
+      echo "Deleting old web-projects."  	
       sudo chown -R $USER:$USER $HOME/web-projects	
       # Don't delete backup directory to keep files symlinks working.
       for env in dev stage prod
@@ -452,37 +452,37 @@ function configureProjects()
 
 	if [ -d $projectdir ]
 	then
-		#Get the project directory configured fully
-		# 1. Clone
-		# 2. Checkout Production
-		# 3. Composer install
-		# 4. Configure npm stuff
-		# 5. Create linked files directory
+          #Get the project directory configured fully
+          # 1. Clone
+          # 2. Checkout Production
+          # 3. Composer install
+          # 4. Configure npm stuff
+          # 5. Create linked files directory
 
-		#Link files directory to restored archive
-		echo "Cloning website repository..."
-		git clone $repository $repo_folder
-		sudo chown -R $USER:$USER
-		mv $repo_folder.* $projectdir
+          #Link files directory to restored archive
+          echo "Cloning website repository..."
+          git clone $repository $repo_folder
+          sudo chown -R $USER:$USER
+          mv $repo_folder.* $projectdir
 
-		#Now go to tip of production and get all dependencies
-		pushd $projectdir > /dev/null
-		git checkout Production
-		composer install --no-dev # > /dev/null 2>&1 # & p1=$!
-		cd $projectdir/dev/docroot/themes/custom/sdmc
-		configureNPM $projectdir/dev # & p2=$!
-		popd > /dev/null
+          #Now go to tip of production and get all dependencies
+          pushd $projectdir > /dev/null
+          git checkout Production
+          composer install --no-dev # > /dev/null 2>&1 # & p1=$!
+          cd $projectdir/dev/docroot/themes/custom/sdmc
+          configureNPM $projectdir/dev # & p2=$!
+          popd > /dev/null
 
-		#Now symlink the files directory to the files dir in the backup area:
-		
+          #Now symlink the files directory to the files dir in the backup area:
+  
 	# TODO: Uncomment the following when ready for database
-		#filedir=$projectdir/dev/docroot/sites/default/files
-		#[[ -d $filedir ]] && rmdir $filedir
-		#ln -s                 $projectdir/backup/files $filedir
+        #filedir=$projectdir/dev/docroot/sites/default/files
+        #[[ -d $filedir ]] && rmdir $filedir
+        #ln -s $projectdir/backup/files $filedir
         # END todo
-		#echo "Waiting for composer/npm processes to finish..."
-		#wait $p1 $p2
-	fi
+        #echo "Waiting for composer/npm processes to finish..."
+        #wait $p1 $p2
+      fi
 
 	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 }
@@ -509,25 +509,25 @@ function restoreArchive()
 
 	if [ -f $_file ]
 	then
-		_file=`realpath $_file`
-		pushd $_restoredir > /dev/null
-		echo "Restoring: $_file..."
-		tar -xzf $_file
-		if [ $? != 0 ]; then
-			echo "Failed to untar $_file."
-			popd
-			return 5
-		fi
-		sudo chown -R www-data:www-data $_restoredir/files
-		
-		#We cannot set the database backup filename here since this is probably
-		#being run as a background process
+  _file=`realpath $_file`
+  pushd $_restoredir > /dev/null
+  echo "Restoring: $_file..."
+  tar -xzf $_file
+  if [ $? != 0 ]; then
+  	echo "Failed to untar $_file."
+  	popd
+  	return 5
+  fi
+  sudo chown -R www-data:www-data $_restoredir/files
+  
+  #We cannot set the database backup filename here since this is probably
+  #being run as a background process
 
-		popd > /dev/null
-		
+  popd > /dev/null
+  
 	else
-		echo "Archive is gone, like tears in rain..."
-		exit 1
+  echo "Archive is gone, like tears in rain..."
+  exit 1
 	fi
 
 	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
@@ -538,23 +538,23 @@ function initDatabases()
 	[[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}"
 
 	if [ "$drupal_db" = "" ] || [ "$drupal_db" = "UNK" ]; then
-		echo "No database to restore."
+  echo "No database to restore."
 	else
 
-		echo
-		echo "Creating and restoring databases from: $drupal_db..."
-		sed "s|\$d8user|${d8user}|" createdb.sql > cdb.sql
-		sed -i "s|\$d8password|${d8password}|" cdb.sql
-		
-		mysql -u root --password=$mysql_pass < cdb.sql
-		rm cdb.sql
+  echo
+  echo "Creating and restoring databases from: $drupal_db..."
+  sed "s|\$d8user|${d8user}|" createdb.sql > cdb.sql
+  sed -i "s|\$d8password|${d8password}|" cdb.sql
+  
+  mysql -u root --password=$mysql_pass < cdb.sql
+  rm cdb.sql
 
-		#gunzip -c $drupal_db > sdmiramar.sql
-		echo "Restoring $drupal_db..."	
-		mysql -u root --password=$mysql_pass d8dev < $drupal_db &> /dev/null & p1=$!
-		mysql -u root --password=$mysql_pass d8prod < $drupal_db &> /dev/null & p2=$!
-		mysql -u root --password=$mysql_pass d8stage < $drupal_db &> /dev/null & p3=$!
-		
+  #gunzip -c $drupal_db > sdmiramar.sql
+  echo "Restoring $drupal_db..."	
+  mysql -u root --password=$mysql_pass d8dev < $drupal_db &> /dev/null & p1=$!
+  mysql -u root --password=$mysql_pass d8prod < $drupal_db &> /dev/null & p2=$!
+  mysql -u root --password=$mysql_pass d8stage < $drupal_db &> /dev/null & p3=$!
+  
 	fi
 	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 }
