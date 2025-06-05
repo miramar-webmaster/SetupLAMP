@@ -4,7 +4,8 @@ use Drupal\Component\Assertion\Handle;
 if(getenv('SDMC_ENV') == 'dev') {
 putenv('AH_SITE_ENVIRONMENT=dev');
 
-$db_name = 'sdmc';
+//$db_name = 'sdmc';
+$db_name = 'drupal_db';
 /**
  * Database configuration.
  */
@@ -14,8 +15,8 @@ $databases = [
     'default' =>
     [
       'database' => $db_name,
-      'username' => 'drupal',
-      'password' => 'insecure.password',
+      'username' => 'drupal_user',
+      'password' => 'drupal_pass',
       'host' => 'localhost',
       'port' => '3306',
       'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',

@@ -491,13 +491,15 @@ function configureProjects()
 function configureDrupalSettings() # WORK NEEDED
 {
 	[[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}" 
-
+	  export SDMC_ENV=$env
+          settings_dir="$projectdir/docroot/sites/default/settings"
           settingsfile="$projectdir/docroot/sites/default/settings/$env.settings.php"
           sudo chown -R $USER:$USER $HOME/web-projects	
-          sed "s|\$drupal_db|$drupal_db|" $env.settings.php > $settingsfile
-          sed -i "s|\$drupal_user|${drupal_user}|" $settingsfile
-          sed -i "s|\$drupal_password|${drupal_pass}|" $settingsfile
-          sed -i "s|\$env|${_env}|" $settingsfile
+          cp settings $settings_dir
+          sed "s/drupal_db/$drupal_db" $env.settings.php > $settingsfile
+          sed -i "s/drupal_user/${drupal_user}" $settingsfile
+          sed -i "s/drupal_pass/${drupal_pass}" $settingsfile
+          #sed -i "s|env|${_env}|" $settingsfile
 	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 }
 
