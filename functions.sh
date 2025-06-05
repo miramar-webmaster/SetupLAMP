@@ -462,6 +462,7 @@ function configureProjects()
           #Link files directory to restored archive
           echo "Cloning website repository..."
           git clone $repository $repo_folder
+          wait
           sudo chown -R $USER:$USER
           mv $repo_folder.* $projectdir
 
@@ -475,16 +476,16 @@ function configureProjects()
 
           #Now symlink the files directory to the files dir in the backup area:
   
-	# TODO: Uncomment the following when ready for database
-        #filedir=$projectdir/dev/docroot/sites/default/files
-        #[[ -d $filedir ]] && rmdir $filedir
-        #ln -s $projectdir/backup/files $filedir
-        # END todo
-        #echo "Waiting for composer/npm processes to finish..."
-        #wait $p1 $p2
-      fi
+	  # TODO: Uncomment the following when ready for database
+          #filedir=$projectdir/dev/docroot/sites/default/files
+          #[[ -d $filedir ]] && rmdir $filedir
+          #ln -s $projectdir/backup/files $filedir
+          # END todo
+          #echo "Waiting for composer/npm processes to finish..."
+          #wait $p1 $p2
+        fi
 
-	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
+      [[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 }
 
 function configureDrupalSettings() # WORK NEEDED
