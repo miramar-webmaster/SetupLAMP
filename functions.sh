@@ -495,7 +495,7 @@ function configureDrupalSettings() # WORK NEEDED
           settings_dir="$projectdir/docroot/sites/default/"
           settingsfile="$projectdir/docroot/sites/default/settings/$env.settings.php"
           sudo chown -R $USER:$USER $HOME/web-projects	
-          cp settings $settings_dir
+          cp -r settings $settings_dir
           sed "s/drupal_db/$drupal_db" $env.settings.php > $settingsfile
           sed -i "s/drupal_user/${drupal_user}" $settingsfile
           sed -i "s/drupal_pass/${drupal_pass}" $settingsfile
