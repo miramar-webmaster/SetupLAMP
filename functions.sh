@@ -462,6 +462,7 @@ function configureProjects()
 		#Link files directory to restored archive
 		echo "Cloning website repository..."
 		git clone $repository $repo_folder
+		sudo chown -R $USER:$USER
 		mv $repo_folder.* $projectdir
 
 		#Now go to tip of production and get all dependencies

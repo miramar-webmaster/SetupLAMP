@@ -3,7 +3,7 @@ This is the help file for the SetupLAMP script suite.
 REQUIREMENTS:
 =============
 
-You will need a bare Ubuntu 24.04+ install in a virtual machine.
+You will need a bare Ubuntu 24.04+ install in a virtual machine. It should be fully updated prior to cloning. (sudo apt-get update && sudo apt-get upgrade -y)
 
 You will need to have Git installed, and a PGP key set up for your Github account.
 
