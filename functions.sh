@@ -493,10 +493,11 @@ function configureDrupalSettings() # WORK NEEDED
 	[[ "$debug" == "Y" ]] && echo "*** Entering function: ${FUNCNAME[0]}" 
 
           settingsfile="$projectdir/docroot/sites/default/settings/$env.settings.php"
-          sudo sed "s|\$drupal_db|$drupal_db|" $env.settings.php > $settingsfile
-          sudo sed -i "s|\$drupal_user|${drupal_user}|" $settingsfile
-          sudo sed -i "s|\$drupal_password|${drupal_password}|" $settingsfile
-          sudo sed -i "s|\$env|${_env}|" $settingsfile
+          sudo chown -R $USER:$USER $HOME/web-projects	
+          sed "s|\$drupal_db|$drupal_db|" $env.settings.php > $settingsfile
+          sed -i "s|\$drupal_user|${drupal_user}|" $settingsfile
+          sed -i "s|\$drupal_password|${drupal_pass}|" $settingsfile
+          sed -i "s|\$env|${_env}|" $settingsfile
 	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 }
 
