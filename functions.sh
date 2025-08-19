@@ -310,30 +310,28 @@ function configure_apache()
   # The items below are customizations for a Drupal dev/stage/prod installation
     echo 'Customizing default LAMP for Drupal dev/stage/prod installation.'
 	
-  addHosts 
+  addHosts
 
-  #sudo cp 101-dev.conf   /etc/apache2/sites-available
-  #sudo cp 102-stage.conf /etc/apache2/sites-available
-  #sudo cp 103-prod.conf  /etc/apache2/sites-available
+  sudo cp *$env*.conf   /etc/apache2/sites-available
 
   #sudo sed -i "s|\/\$HOME|${HOME}|g" /etc/apache2/sites-available/101-dev.conf
   #sudo sed -i "s|\/\$HOME|${HOME}|g" /etc/apache2/sites-available/102-stage.conf
   #sudo sed -i "s|\/\$HOME|${HOME}|g" /etc/apache2/sites-available/103-prod.conf
-
+ 
   #sudo a2ensite 101-dev 102-stage 103-prod &> /dev/null
 
    self_sign '/etc/apache2' '/CN=*'
-
-     sitenum=100
-     conffile="$sitenum-$env.conf"
+: '
+     #sitenum=100
+     conffile="$env.conf"
      filename="/etc/apache2/sites-available/$conffile"
      servername="$env.loc"
 
      sudo cp $env.conf  $filename
-     sudo sed -i "s|\/\$home|${HOME}|g" $filename
-     sudo sed -i "s|\/\$site|/$site|g" $filename
-     sudo sed -i "s|\$servername|$servername|g" $filename
-     sudo sed -i "s|\$env|$site|g" $filename
+     #sudo sed -i "s|\/\$home|${HOME}|g" $filename
+     #sudo sed -i "s|\/\$site|/$site|g" $filename
+     #sudo sed -i "s|\$servername|$servername|g" $filename
+     #sudo sed -i "s|\$env|$site|g" $filename
   
      sudo a2ensite $conffile &> /dev/null
 	
@@ -346,7 +344,7 @@ function configure_apache()
      sudo sed -i "s|\/\$site|/$site|g" $filename
      sudo sed -i "s|\$servername|$servername|g" $filename
      sudo sed -i "s|\$env|$site|g" $filename
-
+'
      sudo a2ensite $conffile &> /dev/null
   fi
 }	
@@ -411,10 +409,6 @@ function createProjectDirs()
       echo "Deleting old web-projects."  	
       sudo chown -R $USER:$USER $HOME/web-projects	
       # Don't delete backup directory to keep files symlinks working.
-      for env in dev stage prod
-      do
-        rm -rf $HOME/web-projects/$env
-      done
     else
       [[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
       return
@@ -500,6 +494,11 @@ function configureDrupalSettings() # WORK NEEDED
           sed -i "s/drupal_user/${drupal_user}" $settingsfile
           sed -i "s/drupal_pass/${drupal_pass}" $settingsfile
           #sed -i "s|env|${_env}|" $settingsfile
+          
+          if [[ $env == "stage" || $env == "prod" ]] then
+            sudo mv -R $projectdir /var/www/sdmc
+          fi
+          
 	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 }
 
@@ -555,10 +554,7 @@ function initDatabases()
 
   #gunzip -c $drupal_db > sdmiramar.sql
   echo "Restoring $drupal_db..."	
-  mysql -u root --password=$mysql_pass d8dev < $drupal_db &> /dev/null & p1=$!
-  mysql -u root --password=$mysql_pass d8prod < $drupal_db &> /dev/null & p2=$!
-  mysql -u root --password=$mysql_pass d8stage < $drupal_db &> /dev/null & p3=$!
-  
+  mysql -u root --password=$mysql_pass sdmc < $drupal_db &> /dev/null & p1=$!
 	fi
 	[[ "$debug" == "Y" ]] && echo "*** Exiting function: ${FUNCNAME[0]}"
 }
